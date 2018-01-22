@@ -14,7 +14,7 @@ def T_Net_Compare(table_name, area):
         .builder \
         .appName('myApp') \
         .getOrCreate()
-    uri = "mongodb://root:Abcdef9*@132.110.71.123/ouyh." + table_name + "?authSource=admin"
+    uri = "mongodb://xxx" + table_name + "?authSource=admin"
     df = spark.read.format("com.mongodb.spark.sql").option('uri', uri).load()
     df.registerTempTable(table_name)
     query_date = (datetime.datetime.now() + datetime.timedelta(days=-7)).strftime('%Y-%m-%d')
@@ -68,7 +68,7 @@ if __name__ == '__main__':
         ])
         # position_telecom_combined = T_Net_Compare('position_telecom_combined').filter(lambda x: 0<x[0][0]<50000 and 0<x[0][1]<50000)
         # position_telecom_combined = T_Net_Compare('Position_test').filter(
-        position_telecom_combined = T_Net_Compare('Position_test', areaName).filter(
+        position_telecom_combined = T_Net_Compare('position_telecom_combined', areaName).filter(
             lambda x: 0 < x[0][0] < 50000 and 0 < x[0][1] < 50000)
         # position_telecom_combined.map(lambda x: (
         #     112 + x[0][0] * 0.00049, 22 + x[0][1] * 0.00045, float('%.2f' % (x[1] - 104)))).toDF().toPandas().to_csv(
