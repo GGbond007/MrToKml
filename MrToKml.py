@@ -20,12 +20,11 @@ def T_Net_Compare(table_name, area):
     query_date = (datetime.datetime.now() + datetime.timedelta(days=-7)).strftime('%Y-%m-%d')
     f1 = spark.sql("select X,Y,Count,Rsrp,CellId from " + table_name + " where StatDate > '" + query_date + "'")
     f2 = f1.rdd.filter(lambda s: paramDicts.get(int(s[4][:6])) == area) \
-        .map(lambda s: ((s[0], s[1]), (s[2], s[3]))) \
+        .map(lambda s: ((s[0], s[1]), (s[3] / s[2], 1))) \
         .reduceByKey(lambda x, y: (x[0] + y[0], x[1] + y[1])) \
         .map(lambda x: ((x[0][0], x[0][1]), x[1][1] / x[1][0]))
     result = f2.sortBy(lambda x: x[0][0], True)
     result.foreach(lambda x: print(x))
-    print('----------------6----------------------------------------------------------------')
     return result
 
 
@@ -79,16 +78,10 @@ if __name__ == '__main__':
             continue
         df = position_telecom_combined.map(lambda x: (
             112 + x[0][0] * 0.00049, 22 + x[0][1] * 0.00045, float('%.2f' % (x[1] - 104)))).toDF().toPandas()
-        print('-------------------------------------1-------------------------------------------')
-        print(df.head())
-        print('--------------------------------------2------------------------------------------')
         # 电信
         kml_telecom = simplekml.Kml()
         df.columns = ['lon', 'lat', 'telecom']
         telecom = df[['lon', 'lat', 'telecom']].to_dict(orient='records')
-        print('---------------------------------------3-----------------------------------------')
-        print(telecom)
-        print('----------------------------------------4----------------------------------------')
         for index, item in enumerate(telecom):
             print(item)
             # print('-------------')
